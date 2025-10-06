@@ -1,0 +1,140 @@
+---
+# Copyright 2025 edcsnt. All rights reserved.
+default:
+  artifacts:
+    expire_in: 10m
+  interruptible: true
+  tags:
+    - CHANGEME
+  # TODO: keep up with
+  # <https://gitlab.com/gitlab-org/gitlab/-/issues/213634>
+  timeout: 60s
+
+variables:
+  # <https://docs.gitlab.com/runner/configuration/advanced-configuration/#use-a-posix-compliant-shell>
+  FF_POSIXLY_CORRECT_ESCAPES: true
+
+.common: &common
+  dependencies: []
+
+.if: &if $CI_PIPELINE_SOURCE == 'push' || 'web'
+
+.pull: &pull
+  pull_policy: if-not-present
+
+.python: &python
+  rules:
+    # TODO: cannot merge sequences from hidden jobs until
+    # <https://github.com/yaml/yaml/issues/48> is completed
+    - if: *if
+      changes:
+        - '**/*.py'
+        - .gitlab-ci.yml
+        - pyproject.toml
+
+.shell: &shell
+  rules:
+    - if: *if
+      changes:
+        - '**/*.sh'
+        - .gitlab-ci.yml
+
+.tox: &tox
+  image:
+    # prefer portable YAML anchors to the GitLab-specific extends
+    # keyword
+    <<: *pull
+    name: docker.io/$CI_PROJECT_NAMESPACE_SLUG/tox:latest
+  script:
+    - tox run -e $CI_JOB_NAME_SLUG
+  cache:
+    paths:
+      - .tox
+    when: always
+
+checkbashisms:
+  <<: *common
+  <<: *shell
+  image:
+    <<: *pull
+    name: docker.io/library/alpine:latest
+  before_script:
+    - apk add checkbashisms
+  script:
+    - >-
+        find . -name .git -type d -prune
+        -o -name \*.sh -type f -size +0c -exec checkbashisms -pflx {} +
+
+markdownlint:
+  <<: *common
+  image:
+    <<: *pull
+    name: quay.io/redhat-aqe/markdownlint:latest
+  script:
+    - mdl .
+  rules:
+    - if: *if
+      changes:
+        - '**/*.md'
+        - .gitlab-ci.yml
+        - .mdl.rb
+        - .mdlrc
+
+pylint:
+  <<: *common
+  <<: *python
+  <<: *tox
+
+mypy:
+  <<: *common
+  <<: *python
+  <<: *tox
+
+ruff-check:
+  <<: *common
+  <<: *python
+  <<: *tox
+
+ruff-format:
+  <<: *common
+  <<: *python
+  <<: *tox
+
+shellcheck:
+  <<: *common
+  <<: *shell
+  image:
+    <<: *pull
+    name: docker.io/koalaman/shellcheck-alpine:latest
+  script:
+    - >-
+        find . -name .git -type d -prune
+        -o -name \*.sh -type f -size +0c -exec shellcheck -a {} +
+
+vale:
+  <<: *common
+  image:
+    <<: *pull
+    name: docker.io/jdkato/vale:latest
+    # <https://docs.gitlab.com/ci/docker/using_docker_images/#override-the-entrypoint-of-an-image>
+    entrypoint:
+      - ''
+  before_script:
+    - vale sync
+  script:
+    - vale --glob='!.vale/*' .
+  rules:
+    - if: *if
+      changes:
+        - '**/*.{ini,md,py,rb}'
+        - .gitlab-ci.yml
+        - .vale/config/**/*.{txt,yml}
+
+yamllint:
+  <<: *common
+  <<: *tox
+  rules:
+    - if: *if
+      changes:
+        - '**/*.{yaml,yml}'
+        - .yamllint

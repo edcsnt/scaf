@@ -1,0 +1,25 @@
+---
+# Copyright 2025 edcsnt. All rights reserved.
+name: CHANGEME
+on:  # yamllint disable-line rule:truthy
+  push:
+    branches:
+      - master
+    paths:
+      - .github/workflows/CHANGEME.yaml
+  workflow_dispatch: {}
+permissions: {}
+defaults:
+  run:
+    shell: sh
+concurrency:
+  group: ${{ github.workflow }}
+  cancel-in-progress: true
+jobs:
+  CHANGEME:
+    runs-on:
+      - ubuntu-latest
+    steps:
+      - run: |
+          CHANGEME
+    timeout-minutes: 1
