@@ -33,7 +33,8 @@ rules:
   line-length:
     max: 79
     allow-non-breakable-inline-mappings: true  # URLs
-  octal-values: enable  # <https://x.com/thockin/status/1346873150382870528>
+  # <https://x.com/thockin/status/1346873150382870528>
+  octal-values: enable
   quoted-strings:
     required: only-when-needed
   truthy: enable
