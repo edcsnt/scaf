@@ -9,6 +9,8 @@ spelling_language = en-US
 trim_trailing_whitespace = true
 insert_final_newline = true
 max_line_length = 79
+[*.html]
+indent_size = 1
 [*.ini]
 indent_size = 4
 [*.md]
