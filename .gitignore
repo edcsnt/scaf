@@ -1,4 +1,7 @@
 # Copyright 2025 edcsnt. All rights reserved.
+# require TypeScript
+**/*.js
+**/*.jsx
 # build
 **/*.egg-info/
 dist/

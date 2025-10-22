@@ -102,7 +102,8 @@ exclude-protected = [
 ]
 
 [tool.pylint.design]
-max-parents = 0  # <https://youtu.be/QM1iUe6IofM?t=409>
+# <https://youtu.be/QM1iUe6IofM?t=409>
+max-parents = 0
 
 [tool.pylint.format]
 expected-line-ending-format = "LF"

@@ -16,7 +16,7 @@ rules:
     ignore-shebangs: false
   comments-indentation: enable
   document-end:
-    present: false
+    present: true
   document-start:
     present: true
   empty-lines:
@@ -32,7 +32,8 @@ rules:
     check-multi-line-strings: true
   line-length:
     max: 79
-    allow-non-breakable-inline-mappings: true  # URLs
+    # URLs
+    allow-non-breakable-inline-mappings: true
   # <https://x.com/thockin/status/1346873150382870528>
   octal-values: enable
   quoted-strings:

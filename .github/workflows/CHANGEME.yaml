@@ -1,7 +1,8 @@
 ---
 # Copyright 2025 edcsnt. All rights reserved.
 name: CHANGEME
-on:  # yamllint disable-line rule:truthy
+# yamllint disable-line rule:truthy
+on:
   push:
     branches:
       - master
